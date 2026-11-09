@@ -1,0 +1,544 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>WildRide Server — Coming Soon</title>
+<meta name="description" content="WildRide is a new Minecraft server. Join the waitlist!">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Press+Start+2P&family=VT323&display=swap" rel="stylesheet">
+<style>
+  :root {
+    --space-0: #04030c;
+    --space-1: #0b0a24;
+    --space-2: #16154a;
+    --atmo: #2b5fb8;
+    --gold: #ffd84a;
+    --gold-dark: #b8860b;
+    --green: #5cff6e;
+    --purple: #b88cff;
+    --text: #e8e8ff;
+    --muted: #9a9ac8;
+  }
+  * { box-sizing: border-box; margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    font-family: 'VT323', monospace;
+    color: var(--text);
+    background: linear-gradient(to bottom,
+      var(--space-0) 0%,
+      var(--space-1) 35%,
+      var(--space-2) 70%,
+      #1d3a7a 88%,
+      var(--atmo) 100%);
+    min-height: 100vh;
+    overflow-x: hidden;
+    position: relative;
+    font-size: 22px;
+  }
+  #stars {
+    position: absolute; inset: 0;
+    width: 100%; height: 100%;
+    pointer-events: none; z-index: 0;
+  }
+  main { position: relative; z-index: 2; }
+
+  /* ---------- HERO ---------- */
+  .hero {
+    min-height: 100vh;
+    display: flex; flex-direction: column;
+    align-items: center; justify-content: center;
+    text-align: center;
+    padding: 60px 20px 40px;
+  }
+  .title {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(38px, 10vw, 110px);
+    letter-spacing: 4px;
+    color: #f2f2f2;
+    text-shadow:
+      0 4px 0 #9a9a9a,
+      0 8px 0 #6b6b6b,
+      0 12px 0 #3f3f3f,
+      0 16px 24px rgba(0,0,0,.7),
+      0 0 40px rgba(184,140,255,.35);
+    line-height: 1.1;
+  }
+  .subtitle {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(14px, 3vw, 26px);
+    color: var(--gold);
+    margin-top: 28px;
+    letter-spacing: 8px;
+    text-shadow: 0 3px 0 var(--gold-dark), 0 0 20px rgba(255,216,74,.4);
+  }
+  .soon {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(12px, 2.4vw, 18px);
+    margin-top: 34px;
+    color: var(--green);
+    animation: blink 1.4s steps(2, start) infinite;
+  }
+  @keyframes blink { to { visibility: hidden; } }
+
+  /* ---------- COUNTER ---------- */
+  .panel {
+    margin-top: 44px;
+    background: rgba(10, 8, 30, .78);
+    border: 4px solid #3c3a7a;
+    box-shadow: 0 0 0 4px #000, 0 0 40px rgba(120,100,255,.25);
+    padding: 28px 30px 30px;
+    width: min(560px, 100%);
+    image-rendering: pixelated;
+  }
+  .count-label { color: var(--muted); font-size: 24px; }
+  .count {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(36px, 8vw, 64px);
+    color: var(--gold);
+    margin: 14px 0 6px;
+    text-shadow: 0 4px 0 var(--gold-dark);
+  }
+  .count-sub { color: var(--muted); font-size: 22px; margin-bottom: 22px; }
+
+  form { display: flex; gap: 10px; flex-wrap: wrap; justify-content: center; }
+  input[type=text] {
+    flex: 1 1 220px;
+    font-family: 'VT323', monospace;
+    font-size: 26px;
+    padding: 10px 14px;
+    background: #000;
+    color: #fff;
+    border: 3px solid #a0a0a0;
+    outline: none;
+  }
+  input[type=text]:focus { border-color: var(--gold); }
+  .mc-btn {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px;
+    padding: 16px 18px;
+    color: #fff;
+    background: linear-gradient(#6fa83c, #4a7d22);
+    border: 3px solid #000;
+    box-shadow: inset 0 3px 0 #9ad65f, inset 0 -4px 0 #2f5214;
+    cursor: pointer;
+    text-shadow: 2px 2px 0 #2a3d12;
+  }
+  .mc-btn:hover { filter: brightness(1.12); }
+  .mc-btn:active { transform: translateY(2px); }
+  .mc-btn:disabled { filter: grayscale(.8); cursor: default; }
+  .msg { min-height: 28px; margin-top: 14px; font-size: 24px; }
+  .msg.ok { color: var(--green); }
+  .msg.err { color: #ff6b6b; }
+  .joined {
+    display: flex; align-items: center; justify-content: center; gap: 14px;
+    font-size: 26px; color: var(--green);
+  }
+  .joined img { width: 48px; height: 48px; image-rendering: pixelated; border: 3px solid #000; }
+
+  .scroll-hint { margin-top: 40px; color: var(--muted); font-size: 22px; animation: bob 2s ease-in-out infinite; }
+  @keyframes bob { 50% { transform: translateY(8px); } }
+
+  /* ---------- SECTIONS ---------- */
+  section.block { padding: 70px 20px; max-width: 1100px; margin: 0 auto; text-align: center; }
+  h2 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: clamp(16px, 3.4vw, 28px);
+    color: var(--purple);
+    text-shadow: 0 3px 0 #4b2a8a;
+    margin-bottom: 14px;
+  }
+  .lead { color: var(--muted); font-size: 24px; margin-bottom: 40px; }
+
+  .spoilers { display: grid; grid-template-columns: repeat(auto-fit, minmax(260px, 1fr)); gap: 28px; }
+  .card {
+    background: rgba(8, 6, 26, .82);
+    border: 4px solid #2c2a62;
+    box-shadow: 0 0 0 4px #000;
+    padding: 26px 18px 22px;
+    position: relative;
+    overflow: hidden;
+    transition: transform .25s, border-color .25s;
+  }
+  .card:hover { transform: translateY(-6px); border-color: var(--purple); }
+  .card svg { width: 100%; height: 170px; filter: drop-shadow(0 0 14px var(--glow)); }
+  .card .floaty { animation: float 4s ease-in-out infinite; }
+  @keyframes float { 50% { transform: translateY(-10px); } }
+  .card h3 {
+    font-family: 'Press Start 2P', monospace;
+    font-size: 14px; margin: 18px 0 10px;
+    color: var(--glow);
+  }
+  .card p { color: var(--muted); font-size: 21px; line-height: 1.15; }
+  .stamp {
+    position: absolute; top: 16px; right: -38px;
+    transform: rotate(35deg);
+    background: #c62828; color: #fff;
+    font-family: 'Press Start 2P', monospace; font-size: 9px;
+    padding: 6px 44px;
+    box-shadow: 0 2px 0 #000;
+  }
+
+  /* recent waiters */
+  .waiters { display: flex; flex-wrap: wrap; justify-content: center; gap: 14px; }
+  .waiter {
+    display: flex; align-items: center; gap: 10px;
+    background: rgba(0,0,0,.55);
+    border: 3px solid #2c2a62;
+    padding: 6px 12px 6px 6px;
+    font-size: 22px;
+  }
+  .waiter img { width: 32px; height: 32px; image-rendering: pixelated; }
+  .empty { color: var(--muted); }
+
+  .discord-btn {
+    display: inline-flex; align-items: center; gap: 14px;
+    font-family: 'Press Start 2P', monospace; font-size: 14px;
+    color: #fff; text-decoration: none;
+    background: #5865f2;
+    border: 3px solid #000;
+    box-shadow: inset 0 3px 0 #8a94ff, inset 0 -4px 0 #3640b8, 0 0 30px rgba(88,101,242,.5);
+    padding: 18px 26px;
+    text-shadow: 2px 2px 0 #2a2f7a;
+  }
+  .discord-btn:hover { filter: brightness(1.12); }
+  .discord-btn svg { width: 28px; height: 28px; }
+
+  /* ---------- EARTH ---------- */
+  .earth-wrap {
+    position: relative;
+    height: 52vw; max-height: 600px; min-height: 300px;
+    overflow: hidden;
+    z-index: 1;
+    margin-top: 40px;
+  }
+  .earth {
+    position: absolute;
+    left: 50%; transform: translateX(-50%);
+    top: 110px;
+    width: 150vw; height: 150vw;
+    max-width: 2200px; max-height: 2200px;
+    border-radius: 50%;
+    background:
+      radial-gradient(circle at 50% 8%, #4fa3ff 0%, #2a6fd6 25%, #164a9e 50%, #0b2a63 75%);
+    box-shadow:
+      0 0 60px 20px rgba(110,180,255,.55),
+      0 0 160px 60px rgba(70,130,255,.25),
+      inset 0 20px 60px rgba(255,255,255,.25);
+    overflow: hidden;
+  }
+  .earth svg { position: absolute; inset: 0; width: 100%; height: 100%; }
+  .earth-wrap::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: 0; height: 60px;
+    background: linear-gradient(transparent, rgba(4,10,30,.6));
+  }
+  footer {
+    position: absolute; left: 0; right: 0; bottom: 18px;
+    text-align: center; z-index: 3;
+    font-size: 20px; color: rgba(255,255,255,.85);
+    text-shadow: 0 2px 4px #000;
+  }
+
+  /* shooting ship */
+  .flyby {
+    position: absolute; top: 18vh; left: -120px; width: 90px; z-index: 1;
+    animation: flyby 22s linear infinite; opacity: .85;
+    pointer-events: none;
+  }
+  @keyframes flyby {
+    0% { transform: translate(0, 0) rotate(8deg); }
+    100% { transform: translate(calc(100vw + 240px), 40vh) rotate(8deg); }
+  }
+
+
+  /* Holax aliens drifting in the background */
+  .holax { position: absolute; z-index: 1; pointer-events: none; image-rendering: pixelated; opacity: .9;
+    filter: drop-shadow(0 0 10px rgba(170,255,60,.35)); }
+  .holax.h1 { width: 70px; top: 32vh; left: 6vw; animation: drift1 14s ease-in-out infinite; }
+  .holax.h2 { width: 50px; top: 120vh; right: 7vw; animation: drift2 18s ease-in-out infinite; opacity: .75; }
+  .holax.h3 { width: 36px; top: 12vh; right: 16vw; animation: drift1 20s ease-in-out infinite reverse; opacity: .55; }
+  @keyframes drift1 { 0%,100% { transform: translate(0,0) rotate(-12deg); } 50% { transform: translate(30px,-26px) rotate(14deg); } }
+  @keyframes drift2 { 0%,100% { transform: translate(0,0) rotate(10deg); } 50% { transform: translate(-36px,22px) rotate(-16deg); } }
+  .flyby { width: 110px; filter: drop-shadow(0 0 8px rgba(255,60,60,.5)); }
+  @media (max-width: 700px) { .holax.h1 { top: 70vh; left: 2vw; width: 48px; } .holax.h3 { display:none; } }
+
+  .demo-banner {
+    position: fixed; bottom: 10px; left: 10px; z-index: 50;
+    background: #c62828; color: #fff; font-size: 18px; padding: 6px 10px;
+    border: 2px solid #000;
+  }
+</style>
+</head>
+<body>
+<canvas id="stars"></canvas>
+
+<!-- small ship that flies across the sky -->
+<svg class="flyby" aria-label="Digen's ship" viewBox="0 0 30 12" shape-rendering="crispEdges" aria-hidden="true">
+  <rect x="4" y="4" width="18" height="4" fill="#d62828"/>
+  <rect x="22" y="5" width="4" height="2" fill="#d62828"/>
+  <rect x="10" y="2" width="6" height="2" fill="#8a1414"/>
+  <rect x="10" y="8" width="6" height="2" fill="#8a1414"/>
+  <rect x="17" y="5" width="3" height="2" fill="#5ce1ff"/>
+  <rect x="0" y="5" width="4" height="2" fill="#ff9a3c"/>
+  <rect x="1" y="4" width="2" height="1" fill="#ffd84a"/>
+</svg>
+
+
+<!-- Holax alien (zombie body, giant eye head) -->
+<svg width="0" height="0" style="position:absolute">
+  <symbol id="holax" viewBox="0 0 16 32" shape-rendering="crispEdges">
+    <!-- eye head -->
+    <rect x="4" y="0" width="8" height="8" fill="#111"/>
+    <rect x="5" y="1" width="6" height="6" fill="#e6ef3a"/>
+    <rect x="6" y="2" width="4" height="4" fill="#3fbf2a"/>
+    <rect x="7" y="3" width="2" height="2" fill="#000"/>
+    <rect x="7" y="3" width="1" height="1" fill="#fff"/>
+    <rect x="5" y="1" width="1" height="1" fill="#c7d42a"/><rect x="10" y="6" width="1" height="1" fill="#c7d42a"/>
+    <!-- torso (zombie shirt) -->
+    <rect x="4" y="8" width="8" height="12" fill="#00a3a3"/>
+    <rect x="4" y="8" width="8" height="2" fill="#008a8a"/>
+    <!-- arms: sleeve + green skin -->
+    <rect x="0" y="8" width="4" height="4" fill="#00a3a3"/><rect x="12" y="8" width="4" height="4" fill="#00a3a3"/>
+    <rect x="0" y="12" width="4" height="8" fill="#4f8f3a"/><rect x="12" y="12" width="4" height="8" fill="#4f8f3a"/>
+    <rect x="0" y="18" width="4" height="2" fill="#3d7330"/><rect x="12" y="18" width="4" height="2" fill="#3d7330"/>
+    <!-- legs -->
+    <rect x="4" y="20" width="4" height="10" fill="#3b3fa8"/><rect x="8" y="20" width="4" height="10" fill="#33379a"/>
+    <rect x="4" y="30" width="4" height="2" fill="#555"/><rect x="8" y="30" width="4" height="2" fill="#555"/>
+  </symbol>
+</svg>
+<svg class="holax h1" viewBox="0 0 16 32" aria-label="Holax alien"><use href="#holax"/></svg>
+<svg class="holax h2" viewBox="0 0 16 32" aria-hidden="true"><use href="#holax"/></svg>
+<svg class="holax h3" viewBox="0 0 16 32" aria-hidden="true"><use href="#holax"/></svg>
+
+<main>
+  <!-- ================= HERO ================= -->
+  <section class="hero">
+    <h1 class="title">WILDRIDE</h1>
+    <div class="subtitle">SERVER</div>
+    <div class="soon">&gt; COMING SOON &lt;</div>
+
+    <div class="panel">
+      <div class="count-label">Players waiting for launch</div>
+      <div class="count" id="count">...</div>
+      <div class="count-sub">Join the waitlist with your Minecraft username!</div>
+
+      <div id="formArea">
+        <form id="joinForm" autocomplete="off">
+          <input type="text" id="username" placeholder="Minecraft username" maxlength="16" spellcheck="false" required>
+          <button class="mc-btn" id="joinBtn" type="submit">I'M WAITING!</button>
+        </form>
+      </div>
+      <div class="msg" id="msg"></div>
+    </div>
+
+    <div class="scroll-hint">▼ scroll down ▼</div>
+  </section>
+
+  <!-- ================= RECENT WAITERS ================= -->
+  <section class="block">
+    <h2>LATEST PLAYERS IN LINE</h2>
+    <p class="lead">You could be next.</p>
+    <div class="waiters" id="waiters"><span class="empty">Loading...</span></div>
+  </section>
+
+  <!-- ================= DISCORD ================= -->
+  <section class="block">
+    <h2>JOIN THE COMMUNITY</h2>
+    <p class="lead">Get sneak peeks, updates and the launch date first.</p>
+    <a class="discord-btn" href="https://discord.gg/tzXBr2GkA" target="_blank" rel="noopener">
+      <svg viewBox="0 0 24 24" fill="#fff" aria-hidden="true"><path d="M20.3 4.4A19.7 19.7 0 0 0 15.4 3l-.6 1.3a18.3 18.3 0 0 0-5.6 0L8.6 3a19.6 19.6 0 0 0-4.9 1.5C.6 9.1-.3 13.6.1 18.1a19.8 19.8 0 0 0 6 3l1.3-2.1a12.8 12.8 0 0 1-2-1l.5-.4a14.1 14.1 0 0 0 12.2 0l.5.4c-.6.4-1.3.7-2 1l1.3 2.1a19.7 19.7 0 0 0 6-3c.5-5.2-.8-9.7-3.6-13.7ZM8 15.3c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Zm8 0c-1.2 0-2.2-1.1-2.2-2.4s1-2.4 2.2-2.4 2.2 1.1 2.2 2.4-1 2.4-2.2 2.4Z"/></svg>
+      JOIN DISCORD
+    </a>
+  </section>
+</main>
+
+<!-- ================= EARTH ================= -->
+<div class="earth-wrap">
+  <div class="earth">
+    <svg viewBox="0 0 100 100" preserveAspectRatio="none" shape-rendering="crispEdges" aria-hidden="true">
+      <g fill="#3fa34d">
+        <rect x="18" y="4" width="8" height="3"/><rect x="16" y="7" width="12" height="4"/><rect x="20" y="11" width="6" height="4"/>
+        <rect x="40" y="2" width="6" height="2"/><rect x="38" y="4" width="10" height="3"/><rect x="42" y="7" width="5" height="3"/>
+        <rect x="60" y="5" width="9" height="3"/><rect x="58" y="8" width="14" height="4"/><rect x="62" y="12" width="7" height="5"/>
+        <rect x="78" y="10" width="6" height="4"/><rect x="30" y="14" width="5" height="3"/>
+      </g>
+      <g fill="#2d7a38">
+        <rect x="20" y="8" width="4" height="2"/><rect x="62" y="9" width="5" height="2"/><rect x="41" y="5" width="3" height="1"/>
+      </g>
+      <g fill="#e8d28a">
+        <rect x="64" y="12" width="3" height="2"/><rect x="22" y="12" width="2" height="2"/>
+      </g>
+      <g fill="rgba(255,255,255,.75)">
+        <rect x="8" y="3" width="10" height="1"/><rect x="48" y="9" width="9" height="1"/><rect x="30" y="1" width="6" height="1"/><rect x="72" y="3" width="8" height="1"/>
+      </g>
+    </svg>
+  </div>
+  <footer>WildRide Server © 2026 — made by omerstar</footer>
+</div>
+
+<script type="module">
+/* =====================================================================
+   1) PASTE YOUR FIREBASE CONFIG HERE (from the Firebase console).
+      While it's empty the site runs in DEMO mode (only on your computer).
+   ===================================================================== */
+const firebaseConfig = {
+  apiKey: "",
+  authDomain: "",
+  projectId: "",
+  storageBucket: "",
+  messagingSenderId: "",
+  appId: ""
+};
+/* ===================================================================== */
+
+const DEMO = !firebaseConfig.projectId;
+const USER_RE = /^[A-Za-z0-9_]{3,16}$/;
+const $ = id => document.getElementById(id);
+const head = name => `https://mc-heads.net/avatar/${encodeURIComponent(name)}/64`;
+
+let api;
+
+if (DEMO) {
+  // Local-only fake database so you can test the page before Firebase is set up
+  const KEY = "wildride_demo_list";
+  const load = () => JSON.parse(localStorage.getItem(KEY) || "[]");
+  api = {
+    async count() { return load().length; },
+    async recent() { return load().slice(-12).reverse(); },
+    async exists(lower) { return load().some(u => u.toLowerCase() === lower); },
+    async add(name) { const l = load(); l.push(name); localStorage.setItem(KEY, JSON.stringify(l)); }
+  };
+  const b = document.createElement("div");
+  b.className = "demo-banner"; b.textContent = "DEMO MODE — add Firebase config";
+  document.body.appendChild(b);
+} else {
+  const { initializeApp } = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-app.js");
+  const fs = await import("https://www.gstatic.com/firebasejs/10.12.2/firebase-firestore.js");
+  const db = fs.getFirestore(initializeApp(firebaseConfig));
+  const col = fs.collection(db, "waitlist");
+  api = {
+    async count() { return (await fs.getCountFromServer(col)).data().count; },
+    async recent() {
+      const snap = await fs.getDocs(fs.query(col, fs.orderBy("createdAt", "desc"), fs.limit(12)));
+      return snap.docs.map(d => d.data().username);
+    },
+    async exists(lower) { return (await fs.getDoc(fs.doc(col, lower))).exists(); },
+    async add(name) {
+      await fs.setDoc(fs.doc(col, name.toLowerCase()), {
+        username: name, lower: name.toLowerCase(), createdAt: fs.serverTimestamp()
+      });
+    }
+  };
+}
+
+function animateCount(to) {
+  const el = $("count");
+  const from = parseInt(el.textContent.replace(/\D/g, "")) || 0;
+  const start = performance.now(), dur = 900;
+  const step = t => {
+    const p = Math.min(1, (t - start) / dur);
+    el.textContent = Math.round(from + (to - from) * (1 - Math.pow(1 - p, 3))).toLocaleString();
+    if (p < 1) requestAnimationFrame(step);
+  };
+  requestAnimationFrame(step);
+}
+
+async function refresh() {
+  try {
+    animateCount(await api.count());
+    const list = await api.recent();
+    const w = $("waiters");
+    w.innerHTML = "";
+    if (!list.length) { w.innerHTML = '<span class="empty">No one yet... be the first!</span>'; return; }
+    for (const name of list) {
+      const d = document.createElement("div");
+      d.className = "waiter";
+      const img = document.createElement("img");
+      img.src = head(name); img.alt = ""; img.loading = "lazy";
+      const s = document.createElement("span"); s.textContent = name;
+      d.append(img, s); w.appendChild(d);
+    }
+  } catch (e) {
+    console.error(e);
+    $("count").textContent = "?";
+  }
+}
+
+function showJoined(name) {
+  $("formArea").innerHTML =
+    `<div class="joined"><img src="${head(name)}" alt=""><span>You're on the list, <b></b>!</span></div>`;
+  $("formArea").querySelector("b").textContent = name;
+}
+
+const saved = localStorage.getItem("wildride_joined");
+if (saved) showJoined(saved);
+
+$("joinForm")?.addEventListener("submit", async e => {
+  e.preventDefault();
+  const msg = $("msg");
+  const name = $("username").value.trim();
+  msg.className = "msg";
+  if (!USER_RE.test(name)) {
+    msg.className = "msg err";
+    msg.textContent = "Usernames are 3–16 letters, numbers or _";
+    return;
+  }
+  $("joinBtn").disabled = true;
+  msg.textContent = "Joining...";
+  try {
+    if (await api.exists(name.toLowerCase())) {
+      msg.className = "msg err";
+      msg.textContent = `${name} is already waiting!`;
+      $("joinBtn").disabled = false;
+      return;
+    }
+    await api.add(name);
+    localStorage.setItem("wildride_joined", name);
+    showJoined(name);
+    msg.className = "msg ok";
+    msg.textContent = "See you at launch! ⛏";
+    refresh();
+  } catch (err) {
+    console.error(err);
+    msg.className = "msg err";
+    msg.textContent = "Something went wrong. Try again!";
+    $("joinBtn").disabled = false;
+  }
+});
+
+refresh();
+setInterval(refresh, 30000);
+
+/* ---------- STARS (more at the top, fewer near Earth) ---------- */
+const cv = $("stars"), ctx = cv.getContext("2d");
+let stars = [];
+function makeStars() {
+  const h = document.body.scrollHeight, w = window.innerWidth;
+  cv.width = w; cv.height = h;
+  cv.style.height = h + "px";
+  stars = [];
+  const n = Math.floor((w * h) / 2600);
+  for (let i = 0; i < n; i++) {
+    const y = Math.pow(Math.random(), 1.6) * h; // denser at the top
+    stars.push({ x: Math.random() * w, y, s: Math.random() < .12 ? 3 : (Math.random() < .5 ? 2 : 1),
+      p: Math.random() * Math.PI * 2, sp: .5 + Math.random() * 2 });
+  }
+}
+function draw(t) {
+  ctx.clearRect(0, 0, cv.width, cv.height);
+  for (const st of stars) {
+    const fade = 1 - st.y / cv.height * .85;
+    ctx.globalAlpha = Math.max(0, fade * (.55 + .45 * Math.sin(st.p + t / 1000 * st.sp)));
+    ctx.fillStyle = st.s === 3 ? "#ffe9a8" : "#ffffff";
+    ctx.fillRect(Math.round(st.x), Math.round(st.y), st.s, st.s);
+  }
+  requestAnimationFrame(draw);
+}
+window.addEventListener("resize", makeStars);
+window.addEventListener("load", makeStars);
+makeStars();
+requestAnimationFrame(draw);
+</script>
+</body>
+</html>
